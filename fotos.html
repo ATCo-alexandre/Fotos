@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./img/1_favicon.png" type="image/x-icon">
+    <title>Azul 91 - Fotos</title>
+
+    <!-- Fonte Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100..900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: -1;
+        }
+
+        #preloader {
+            display: flex;
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 99999;
+        }
+
+        #preloader:before,
+        #preloader:after {
+            content: "";
+            background-color: #000000;
+            position: absolute;
+            inset: 0;
+            width: 50%;
+            height: 100%;
+            transition: all 0.3s ease 0s;
+            z-index: -1;
+        }
+
+        #preloader:after {
+            left: auto;
+            right: 0;
+        }
+
+        #preloader .line {
+            position: relative;
+            overflow: hidden;
+            margin: auto;
+            width: 1px;
+            height: 280px;
+            transition: all 0.8s ease 0s;
+        }
+
+        #preloader .line:before {
+            content: "";
+            position: absolute;
+            background-color: #ffffff;
+            left: 0;
+            top: 50%;
+            width: 1px;
+            height: 0%;
+            transform: translateY(-50%);
+            animation: lineincrease 1000ms ease-in-out 0s forwards;
+        }
+
+        #preloader .line:after {
+            content: "";
+            position: absolute;
+            background-color: color-mix(in srgb, var(--default-color), transparent 95%);
+            left: 0;
+            top: 0;
+            width: 1px;
+            height: 100%;
+            transform: translateY(-100%);
+            animation: linemove 1200ms linear 0s infinite;
+            animation-delay: 2000ms;
+        }
+
+        #preloader.loaded .line {
+            opacity: 0;
+            height: 100% !important;
+        }
+
+        #preloader.loaded .line:after {
+            opacity: 0;
+        }
+
+        #preloader.loaded:before,
+        #preloader.loaded:after {
+            animation: preloaderfinish 300ms ease-in-out 500ms forwards;
+        }
+
+        @keyframes lineincrease {
+            0% {
+                height: 0%;
+            }
+
+            100% {
+                height: 100%;
+            }
+        }
+
+        @keyframes linemove {
+            0% {
+                transform: translateY(200%);
+            }
+
+            100% {
+                transform: translateY(-100%);
+            }
+        }
+
+        @keyframes preloaderfinish {
+            0% {
+                width: 5 0%;
+            }
+
+            100% {
+                width: 0%;
+            }
+        }
+
+        body {
+            font-family: "Roboto", sans-serif;
+            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('./img/8_nomeTurma.png');
+            background-size: cover;
+            background-position: center;
+            color: #FFFFFF;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 40px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            background: transparent;
+        }
+
+        .logo-tipo {
+            display: none;
+        }
+
+        /* Dropdown Menu */
+        .dropdown_menu {
+            display: none;
+            position: absolute;
+            right: 2rem;
+            top: 60px;
+            height: 0;
+            width: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: height 0,2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .dropdown_menu.open {
+            height: 240px;
+        }
+
+        .dropdown_menu li {
+            padding: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dropdown_menu li a {
+            color: #FFFFFF;
+            text-decoration: none;
+        }
+
+        .dropdown_menu .btn-adicionar-foto {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Botão Adicionar Foto */
+        .btn-adicionar-foto {
+            background-color: #0000FF;
+            color: #FFFFFF;
+            font-weight: 600;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background-color 0.3s, color 0.3s;
+            width: auto;
+            white-space: nowrap;
+        }
+
+        .btn-adicionar-foto:hover {
+            background-color: #1E90FF;
+            color: #FFFFFF;
+        }
+
+        /* Logotipo */
+        .logo {
+            height: 120px;
+            width: auto;
+            margin-right: 20px;
+            margin-top: -40px;
+        }
+
+        /* Navegação */
+        nav {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        nav a {
+            font-size: 17px;
+            text-decoration: none;
+            color: #FFFFFF;
+            text-align: center;
+            font-weight: 600;
+            transition: color 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        nav a:hover {
+            color: #1E90FF;
+            text-decoration: none;
+        }
+
+        nav a i {
+            display: block;
+            font-size: 1.3rem;
+            color: #1E90FF;
+            margin-bottom: 5px;
+            transition: transform 0.3s ease;
+        }        
+
+        nav a:hover i {
+            transform: scale(1.2);
+        }
+
+        /* Dropdown Menu */
+        .toggle_btn {
+            color: #FFFFFF;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: none;
+        }
+        
+
+        /* Popup Adicionar Foto */
+        .popup {
+            color: #FFFFFF;
+            font-weight: 600;
+            display: none;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 750px;
+            background-color: #0000CD;
+            border: 2px solid #FFFFFF;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .popup form {
+            padding: 10px 20px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .popup label {
+            margin-bottom: 5px;
+        }
+
+        .popup input, .popup select {
+            margin-bottom: 15px;
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 5px;
+        }
+
+        .popup button {
+            margin-top: 10px;
+            padding: 10px 15px;
+        }
+
+        .popup-content {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-direction: column;
+            gap: 10px;
+            height: 100%;
+            justify-content: space-between;
+        }
+
+        .popup-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #FFFFFF;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .popup-icon {
+            width: 200px;
+            height: 40px;
+            object-fit: contain;
+            margin-left: 10px;
+        }
+
+        .popup .close-btn {
+            font-size: 1.3rem;
+            color: #FFFFFF;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            border: none;
+            background: none;
+        }
+
+        /* Botões dentro do Popup */
+        .botoes-popup {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        button {
+            background-color: #FFFFFF;
+            color: #0000FF;
+            font-weight: 600;
+            padding: 6px 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s, color 0.3s;
+            width: 120px;
+            text-align: center;
+        }
+
+        button:hover {
+            background-color: #1E90FF;
+            color: #0000FF;
+        }
+
+        /* Imagem dentro do Popup */
+        .popup-image {
+            width: 20px;
+            height: auto;
+            margin: 10px 0;
+            object-fit: cover;
+        }
+
+        /* Formulário de Upload de Fotos */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            max-height: 620px;
+        }
+
+        input[type="text"], input[type="file"], select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+            color: #FFFFFF;
+        }
+
+        .milhao-input-wrapper {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .milhao-prefixo {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #FFFFFF;
+            margin-right: 0.3rem;
+        }
+
+        .milhao-input {
+            width: 100px;
+            padding: 5px;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .instructions li {
+            color: #FFFFFF;
+            text-align: justify;
+            font-size: 13px;
+        }
+
+        /* Popup de Erro de Milhão */
+        .popup-erro {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .popup-erro-conteudo {
+            background-color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 300px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .popup-erro-conteudo p {
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .popup-erro-conteudo button {
+            background-color: #2051e2;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #popupUpload {
+            z-index: 10;
+        }
+
+        #popupErroMilhao {
+            z-index: 9999; 
+        }
+
+        /* Cabeçalho da Galeria de Fotos */
+        .galeria-heading {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .galeria-heading h1 {
+            color: transparent;
+            font-size: 100px;
+            text-align: center;
+            font-weight: 600;
+            text-decoration: underline;
+            text-decoration-color: #0000FF;
+            margin-top: 10px;
+            -webkit-text-stroke: 2px #0000FF;
+            background: url(./img/3_efeito.png);
+            background-clip: text;
+            background-position: 0 0;
+            animation: back 30s linear infinite;
+        }
+
+        @keyframes back {
+            100% {
+                background-position: 2000px 0;
+            }
+        }
+
+        .galeria-heading p {
+            color: #FFFFFF;
+            font-size: 28px;
+            font-weight: 500;
+            margin-top: 0;
+        }       
+
+        /* Galeria de Fotos */
+        *:focus {
+            outline: none;
+        }
+
+        .galeria {
+            padding: 10px;
+            background-color: transparent;
+            border: none;
+            border-radius: 20px;
+            margin: 10px;
+        }
+
+        .galeria-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 20px;
+            margin-top: 30px;            
+            min-width: 300px;
+            min-height: 100px;
+        }
+
+        .foto {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 1s;
+        }
+
+        .foto img {
+            width: 100%;
+            height: auto;
+            padding: 10px;
+            border: 2px dotted #0000FF;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .foto img:hover {
+            transform: scale(1.1);
+            border: 2px solid #0000FF;
+        }
+
+        /* Foto Expandida */
+        .foto-expandida {
+            position: fixed;
+            top: 440px;
+            left: 920px;
+            transform: translate(-50%, -50%) scale(0);
+            width: 1700px;
+            max-width: 2000px;
+            height: 110vh;
+            max-height: 800px;
+            border: 2px double #0000FF;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+            overflow: hidden;
+            transition: 1s;
+            opacity: 0;
+        }
+
+        .foto-expandida.active {
+            display: flex;
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .foto-expandida.active .botao-fechar,
+        .foto-expandida.active .titulo,
+        .foto-expandida.active .indice,
+        .foto-expandida.active .imagem-grande,
+        .foto-expandida.active .seta-botao {
+            opacity: 1;
+            transition: opacity 0.5s;
+            transition-delay: 1s;
+        }
+
+        /* Barra Superior */
+        .barra-superior {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: #191970;
+            color: #FFFFFF;
+            text-align: center;
+            line-height: 50px;
+            font-weight: 500;
+        }
+
+        /* Título da Foto */
+        .titulo {
+            opacity: 0;
+            text-align: center;
+        }
+
+        /* Botão Fechar Foto Expandida */
+        .botao-fechar {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #87CEFA;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Setas */
+        .seta-botao {
+            font-size: 30px;
+            color: #87CEFA;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 10px;
+            border-radius: 50%;
+            border: none;
+            background: none;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .seta-botao:hover {
+            background: transparent;
+            color: #0000FF;
+        }
+
+        .seta-anterior {
+            left: 10px;
+        }
+
+        .seta-proxima {
+            right: 10px;
+        }
+
+        /* Índice da Foto */
+        .indice {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 30px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.3);
+            opacity: 0;
+        }
+
+        /* Imagem Grande */
+        .imagem-grande {
+            margin-top: 3.5%;
+            width: 90%;
+            height: 90%;
+            border: 2px dotted #FFFFFF;
+            border-radius: 20px;
+            object-fit: contain;
+            opacity: 0;
+        }
+
+        .mobile {
+            display: none;
+        }
+
+        /* Responsividade */
+        @media (max-width: 1024px) {
+            header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            nav,
+            nav a {
+                display: none;
+            }
+
+            /* Ícone Turma */
+            .logo-tipo {
+                display: flex;
+                justify-content: center;
+                flex-grow: 1;
+                align-items: center;
+                margin-left: -100px;
+            }
+
+            /* Botão Adicionar Foto */
+            .btn-adicionar-foto {
+                display: none;
+            }
+
+            .popup {
+                position: fixed;
+                width: 80vw;
+                max-width: 400px;
+                height: auto;
+                max-height: 90vh;
+                overflow: hidden;
+                z-index: 9999;
+                top: 50%;
+                left: 50%;                
+                border-radius: 10px;
+                padding: 15px;
+                transform: translate(-50%, -50%);
+                box-sizing: content-box;
+            }
+
+            .popup-icon {
+                display: none;
+            }
+
+            .popup form {
+                padding: 10px;
+            }
+
+            .popup form label,
+            .popup form input,
+            .popup form textarea,
+            .popup form button {
+                font-size: 14px;
+            }
+
+            .popup form input,
+            .popup form textarea {
+                padding: 6px;
+                width: 100%;
+            }
+
+            .popup form button {
+                padding: 8px 12px;
+            }
+
+            .popup form input[type="file"] {
+                font-size: 12px;
+            }
+            
+            /* Botão Menu Dropdown */
+            .toggle_btn {
+                display: block;
+            }
+
+            /* Dropdown Menu */
+            .dropdown_menu {
+                display: block;
+            }
+
+            /* Cabeçalho da Galeria de Fotos */
+            .galeria-heading {
+                text-align: center;
+                margin-top: 20px;
+            }
+
+            .galeria-heading h1 {
+                color: transparent;
+                font-size: 5rem;
+                text-align: center;
+                font-weight: 600;
+                text-decoration: underline;
+                text-decoration-color: #0000FF;
+                -webkit-text-stroke: 2px #0000FF;
+                background: url(./img/3_efeito.png);
+                background-clip: text;
+                background-position: 0 0;
+                animation: back 30s linear infinite;
+            }
+
+            @keyframes back {
+                100% {
+                    background-position: 2000px 0;
+                }
+            }
+
+            .galeria-heading p {
+                color: #FFFFFF;
+                font-size: 1.5rem;
+                font-weight: 500;
+                margin-top: 0;
+            }
+
+            /* Foto Expandida */
+            .foto-expandida {
+                position: fixed;
+                top: 440px;
+                left: 920px;
+                transform: translate(-50%, -50%) scale(0);
+                width: 1700px;
+                max-width: 1600px;
+                height: 110vh;
+                max-height: 800px;
+                border: 2px double #0000FF;
+                border-radius: 20px;
+                background: rgba(0, 0, 0, 0.9);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 5;
+                overflow: hidden;
+                transition: 1s;
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            nav,
+            nav a {
+                display: none;
+            }
+
+            .logo {
+                display: none;
+            }
+
+            /* Ícone Turma */
+            .logo-tipo {
+                display: flex;
+                justify-content: center;
+                flex-grow: 1;
+                align-items: center;
+                margin-left: -100px;
+            }
+
+            /* Botão Adicionar Foto */
+            .btn-adicionar-foto {
+                display: block;
+            }
+
+            .toggle_btn {
+                display: none;
+            }
+
+            .dropdown_menu {
+                display: none;
+            }
+
+            /* Cabeçalho da Galeria de Fotos */
+            .galeria-heading {
+                text-align: center;
+                margin: 0 auto;
+            }
+
+            .galeria-heading h1 {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: transparent;
+                font-size: 3.5rem;
+                text-align: center;
+                font-weight: 600;
+                text-decoration: underline;
+                text-decoration-color: #0000FF;
+                -webkit-text-stroke: 2px #0000FF;
+                background: url(./img/3_efeito.png);
+                background-clip: text;
+                background-position: 0 0;
+                animation: back 30s linear infinite;
+            }
+
+            @keyframes back {
+                100% {
+                    background-position: 2000px 0;
+                }
+            }
+
+            .galeria-heading p {
+                color: #FFFFFF;
+                font-size: 1rem;
+                font-weight: 500;
+                margin-top: 0;
+            }
+            
+            .galeria {
+                padding: 0;
+                background-color: transparent;
+                border: none;
+                border-radius: 20px;
+            }
+
+            .galeria-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+                justify-items: center;
+                gap: 10px;
+                margin-top: 10px;
+                width: 100%;                           
+            }
+
+            .foto {
+                width: 100%;
+                max-width: 300px;
+                height: 150px;
+            }
+
+            /* Foto Expandida */
+            .foto-expandida {
+                position: fixed;
+                top: 440px;
+                left: 920px;
+                transform: translate(-50%, -50%) scale(0);
+                width: 1700px;
+                max-width: 1600px;
+                height: 110vh;
+                max-height: 800px;
+                border: 2px double #0000FF;
+                border-radius: 20px;
+                background: rgba(0, 0, 0, 0.9);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 5;
+                overflow: hidden;
+                transition: 1s;
+                opacity: 0;
+            }
+
+            /* Barra de Navegação Inferior */
+            nav.mobile {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                height: 50px;
+                width: 100%;
+                padding: 0.8rem 0;
+                background: #0000FF;
+                border-top: 1px solid #0000FF;
+                border-radius: 8px;
+                z-index: 9999;
+                margin: 0 auto;
+            }
+
+            .mobile {
+                transition: 0.5s ease !important;
+            }
+            
+            nav.mobile ul {
+                list-style: none;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                margin: 0;
+                justify-self: center;
+                vertical-align: middle;
+            }
+            
+            nav.mobile ul li {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                font-size: 1rem;
+                flex-grow: 1;
+                margin: 0;
+            }
+            
+            nav.mobile ul li a {
+                color: #FFFFFF;
+                font-size: inherit;
+                display: var(--prP3M8);
+                flex-direction: var(--mZSq9k);
+            }
+            
+            nav.mobile ul li a svg {
+                width: 24px;
+                height: 24px;
+                display: block;
+                margin: 0 auto;
+                color: #FFFFFF;
+            }
+        }
+
+        @media (max-width: 430px) {
+            nav,
+            nav a {
+                display: none;
+            }
+
+            .logo {
+                display: none;
+            }
+
+            /* Ícone Turma */
+            .logo-tipo {
+                display: flex;
+                justify-content: center;
+                flex-grow: 1;
+                align-items: center;
+                margin-left: -100px;
+            }
+
+            /* Botão Adicionar Foto */
+            .btn-adicionar-foto {
+                display: block;
+                margin: auto;
+            }
+
+            .toggle_btn {
+                display: none;
+            }
+
+            .popup {
+                position: fixed;
+                width: 85vw;
+                max-width: 90vw;
+                height: 100vh;
+                max-height: 80vh;
+                overflow: hidden;
+                z-index: 9999;
+                top: 50%;
+                left: 50%;                
+                border-radius: 10px;
+                padding: 15px;
+                transform: translate(-50%, -50%);
+                box-sizing: content-box;
+            }
+
+            .popup-icon {
+                display: none;
+            }
+
+            .popup form {
+                padding: 10px;
+            }
+
+            .popup form label,
+            .popup form input,
+            .popup form textarea,
+            .popup form button {
+                font-size: 14px;
+            }
+
+            .milhao-input-wrapper .milhao-input {
+                width: 20%;
+                padding: 5px;
+                font-size: 1rem;
+                font-weight: 500;
+            }
+
+            .milhao-input-wrapper #nomeGuerra,
+            .milhao-input-wrapper #esquadrilha,
+            .milhao-input-wrapper #tituloFoto {
+                width: 50%;
+            }
+
+            .milhao-prefixo {
+                font-size: 1rem;
+                font-weight: 500;
+                color: #FFFFFF;
+                margin-right: 0.3rem;
+            }
+
+            .popup form button {
+                padding: 5px;
+            }
+
+            .popup form input[type="file"] {
+                font-size: 12px;
+                margin-bottom: 0;
+            }
+
+            .galeria {
+                padding: 0;
+                background-color: transparent;
+                border: none;
+                border-radius: 20px;
+            }
+
+            .galeria-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                justify-items: center;
+                gap: 10px;
+                margin-top: 10px;
+                width: 100%;                           
+            }
+
+            .galeria-heading h1 {
+                font-size: 2.5rem;
+                color: transparent;
+                -webkit-text-stroke: 2px #0000FF;
+                background: url(./img/3_efeito.png);
+                background-clip: text;
+                background-position: 0 0;
+                animation: back 30s linear infinite;
+            }
+
+            @keyframes back {
+                100% {
+                    background-position: 2000px 0;
+                }
+            }
+
+            .galeria-heading p {
+                font-size: 0.75rem;                
+            }
+
+            .foto {
+                padding: 0;
+                width: 95%;
+                height: 100%;
+                object-fit: contain;
+                transition: 1s;
+            }
+
+            /* Foto Expandida */
+            .foto-expandida {
+                position: fixed;
+                top: 400px;
+                left: 300px;
+                transform: translate(-50%, -50%) scale(0);
+                width: 350px;
+                max-width: 2000px;
+                height: 95%;
+                max-height: 800px;
+                border: 2px double #0000FF;
+                border-radius: 20px;
+                background: rgba(0, 0, 0, 0.9);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 5;
+                overflow: hidden;
+                transition: 1s;
+                opacity: 0;
+            }
+
+            /* Barra de Navegação Inferior */
+            nav.mobile {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                height: 50px;
+                width: 100%;
+                padding: 0.8rem 0;
+                background: #0000FF;
+                border-top: 1px solid #0000FF;
+                border-radius: 8px;
+                z-index: 9999;
+                margin: 0 auto;
+            }
+
+            .mobile {
+                transition: 0.5s ease !important;
+            }
+            
+            nav.mobile ul {
+                list-style: none;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                margin: 0;
+                justify-self: center;
+                vertical-align: middle;
+            }
+            
+            nav.mobile ul li {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                font-size: 1rem;
+                flex-grow: 1;
+                margin: 0;
+            }
+            
+            nav.mobile ul li a {
+                color: #FFFFFF;
+                font-size: 10px;
+                display: var(--prP3M8);
+                flex-direction: var(--mZSq9k);
+            }
+            
+            nav.mobile ul li a svg {
+                width: 24px;
+                height: 24px;
+                display: block;
+                margin: 0 auto;
+                color: #FFFFFF;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="overlay"></div>
+    
+    <div id="preloader">
+        <div class="line"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <!-- Logotipo -->
+        <img src="./img/2_logo.gif" alt="Logotipo da Turma Azul 91" class="logo">
+
+        <!-- Navegação -->
+        <nav>
+            <a href="#"><i class="fa-solid fa-home"></i>Home</a>
+            <a href="#"><i class="fa-solid fa-users"></i>Sobre</a>
+            <a href="#"><i class="fa-solid fa-video"></i>Vídeos</a>
+            <a href="#"><i class="fa-solid fa-comments"></i>Comentários</a>
+        </nav>
+
+        <!-- Ícone Turma -->
+        <div class="logo-tipo">
+            <img src="./img/4_logo.png" alt="">
+        </div>
+
+        <!-- Botão Adicionar Foto -->
+        <button id="btnAdicionarFoto" class="btn-adicionar-foto" onclick="abrirPopup()">Adicionar Foto</button>
+
+        <!-- Botão Menu Dropdown -->
+        <div class="toggle_btn">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+        
+        <!-- Dropdoen Menu -->
+        <div class="dropdown_menu">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Sobre</a></li>
+            <li><a href="#">Vídeos</a></li>
+            <li><a href="#">Comentários</a></li>
+            <button id="btnAdicionarFoto" class="btn-adicionar-foto" onclick="abrirPopup()">Adicionar Foto</button>
+        </div>       
+        
+    </header>
+
+    <!-- Cabeçalho da Galeria de Fotos -->
+    <div class="galeria-heading">
+        <h1>Galeria de Fotos</h1>
+        <p>Aqui você pode ver e compartilhar memórias da turma</p>
+    </div>
+
+    <!-- Popup para Upload da Foto -->
+    <div id="popupUpload" class="popup" style="display: none;">
+        <div class="popup-content">
+            <h2 class="popup-title">Adicionar Foto</h2>
+            <img src="./img/7.png" alt="Alunos formando o Nome da Turma" class="popup-icon">
+            <span class="close-btn" onclick="closePopup()" aria-label="Fechar popup">&times;</span>
+            
+        <!-- Formulário de Upload -->
+        <form id="uploadForm" action="#" method="post" enctype="multipart/form-data">
+            <!-- Campos do Formulário -->
+             <label for="milhao">Milhão:</label>
+             <div class="milhao-input-wrapper">
+                <span class="milhao-prefixo">91-</span>
+                <input type="text" id="milhao" maxlength="4" pattern="\d{4}" name="milhao" class="milhao-input" placeholder="" required>
+            </div>
+
+            <label for="nomeGuerra">Nome de Guerra:</label>
+            <input type="text" id="nomeGuerra" name="nomeGuerra" required maxlength="50" placeholder="Digite seu Nome de Guerra" />
+
+            <label for="esquadrilha">Esquadrilha:</label>
+            <select id="esquadrilha" name="esquadrilha" required>
+                <option value="" disabled selected>Selecione a Esquadrilha</option>
+                <option value="7ª Esquadrilha">7ª Esquadrilha</option>
+                <option value="8ª Esquadrilha">8ª Esquadrilha</option>
+                <option value="9ª Esquadrilha">9ª Esquadrilha</option>
+                <option value="10ª Esquadrilha">10ª Esquadrilha</option>
+                <option value="11ª Esquadrilha">11ª Esquadrilha</option>
+                <option value="12ª Esquadrilha">12ª Esquadrilha</option>
+            </select>
+
+            <label for="tituloFoto">Título da Foto:</label>
+            <input type="text" id="tituloFoto" name="tituloFoto" maxlength="50" placeholder="Digite o Título da Foto" />
+
+            <label for="foto">Escolher Foto:</label>
+            <ul class="instructions">
+                <li>* Largura Máxima: 450px</li>
+                <li>* Altura Máxima: 320px</li>
+                <li>* Orientação: Preferencialmente Paisagem</li>
+            </ul>
+
+            <input type="file" id="foto" name="foto" accept="image/*" />
+
+            <!-- Botões -->
+            <div class="botoes-popup">
+                <button type="submit">Enviar</button>
+                <button type="button" onclick="closePopup()">Cancelar</button>
+            </div>
+        </form>
+        </div>
+    </div>
+
+    <!-- Janela de Erro de Milhão -->
+    <div id="popupErroMilhao" class="popup-erro" style="display: none;">
+        <div class="popup-erro-conteudo">
+            <p>Milhão inválido. Por favor, verifique os dados e tente novamente.</p>
+            <button id="botaoOkErro">Ok</button>
+        </div>
+    </div>
+
+    <!-- Foto Expandida -->
+    <div class="foto-expandida">
+        <!-- Barra Superior -->
+        <div class="barra-superior">
+            <p class="titulo">Alunos formando o Nome da Turma</p>
+            <span class="botao-fechar"></span>
+        </div>
+        <!-- Setas -->
+        <button class="seta-botao seta-anterior"><i class="fa-solid fa-arrow-left"></i></button>
+        <button class="seta-botao seta-proxima"><i class="fa-solid fa-arrow-right"></i></button>
+
+        <!-- Imagem Grande -->
+        <img src="./img/fotos/1_nomeTurma.png" class="imagem-grande" alt="Alunos formando o Nome da Turma">
+
+        <!-- Índice da Foto -->
+        <h1 class="indice">01</h1>
+    </div>
+
+    <!-- Galeria de Fotos -->
+    <section class="galeria">
+        <div class="galeria-grid">
+            <div class="foto">
+                <img src="./img/fotos/1_nomeTurma.png" alt="Alunos formando o Nome da Turma" />                
+            </div>
+            <div class="foto">
+                <img src="./img/fotos/2_Homenagem.png" alt="Homenagem à Turma" />                                
+            </div>
+            <div class="foto">
+                <img src="./img/fotos/3_sabreAlado.png" alt="Alunos formando Sabre Alado na Formatura" />                               
+            </div>
+            <div class="foto">
+                <img src="./img/fotos/4_sabreAlado.png" alt="Alunos formando Sabre Alado na Formatura" />
+                
+            </div>
+            <div class="foto">
+                <img src="./img/fotos/5_Encontro1.png" alt="Encontro de Turma 1" />
+            </div>
+            <div class="foto">
+                <img src="./img/fotos/6_Encontro2.png" alt="Encontro de Turma 2" />
+            </div>
+            <div class="foto">
+                <img src="./img/fotos/7_Encontro3.png" alt="Encontro de Turma 3" />
+            </div>
+            <div class="foto">
+                <img src="./img/fotos/8_Encontro4.png" alt="Encontro de Turma 4" />
+            </div>
+            <div class="foto">
+                <img src="./img/fotos/9_moedaFrente.png" alt="Moeda Comemorativa de 30 anos - Frente" />
+            </div>
+            <div class="foto">
+                <img src="./img/fotos/10_moedaVerso.png" alt="Moeda Comemorativa de 30 anos - Verso" />
+            </div>
+            <div class="foto">
+                <img src="./img/fotos/11_placaEEAR.png" alt="Placa da Turma exposta na EEAR" />
+            </div>
+        </div>
+    </section>
+
+    <!-- Barra de Navegação Inferior -->
+    <nav class='mobile' id='ATnav'>
+        <ul>
+            <li>
+                <a href='../../index.html'>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                        <path fill="currentColor" d="M575.8 255.5c0 18-15 32.1-32 32.1l-32 0 .7 160.2c0 2.7-.2 5.4-.5 8.1l0 16.2c0 22.1-17.9 40-40 40l-16 0c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1L416 512l-24 0c-22.1 0-40-17.9-40-40l0-24 0-64c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32 14.3-32 32l0 64 0 24c0 22.1-17.9 40-40 40l-24 0-31.9 0c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2l-16 0c-22.1 0-40-17.9-40-40l0-112c0-.9 0-1.9 .1-2.8l0-69.7-32 0c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z" />
+                    </svg>
+                    <span>Home</span>
+                </a>
+            </li>
+
+            <li>
+                <a href='#'>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                        <path fill="currentColor" d="M144 0a80 80 0 1 1 0 160A80 80 0 1 1 144 0zM512 0a80 80 0 1 1 0 160A80 80 0 1 1 512 0zM0 298.7C0 239.8 47.8 192 106.7 192l42.7 0c15.9 0 31 3.5 44.6 9.7c-1.3 7.2-1.9 14.7-1.9 22.3c0 38.2 16.8 72.5 43.3 96c-.2 0-.4 0-.7 0L21.3 320C9.6 320 0 310.4 0 298.7zM405.3 320c-.2 0-.4 0-.7 0c26.6-23.5 43.3-57.8 43.3-96c0-7.6-.7-15-1.9-22.3c13.6-6.3 28.7-9.7 44.6-9.7l42.7 0C592.2 192 640 239.8 640 298.7c0 11.8-9.6 21.3-21.3 21.3l-213.3 0zM224 224a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zM128 485.3C128 411.7 187.7 352 261.3 352l117.3 0C452.3 352 512 411.7 512 485.3c0 14.7-11.9 26.7-26.7 26.7l-330.7 0c-14.7 0-26.7-11.9-26.7-26.7z"/>
+                    </svg>
+                    <span>Sobre</span>
+                </a>
+            </li>
+
+            <li>
+                <a href='#'>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                        <path fill="currentColor" d="M0 128C0 92.7 28.7 64 64 64l256 0c35.3 0 64 28.7 64 64l0 256c0 35.3-28.7 64-64 64L64 448c-35.3 0-64-28.7-64-64L0 128zM559.1 99.8c10.4 5.6 16.9 16.4 16.9 28.2l0 256c0 11.8-6.5 22.6-16.9 28.2s-23 5-32.9-1.6l-96-64L416 337.1l0-17.1 0-128 0-17.1 14.2-9.5 96-64c9.8-6.5 22.4-7.2 32.9-1.6z"/>
+                    </svg>
+                    <span>Vídeos</span>
+                </a>
+            </li>
+
+            <li>
+                <a href='#'>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                        <path fill="currentColor" d="M208 352c114.9 0 208-78.8 208-176S322.9 0 208 0S0 78.8 0 176c0 38.6 14.7 74.3 39.6 103.4c-3.5 9.4-8.7 17.7-14.2 24.7c-4.8 6.2-9.7 11-13.3 14.3c-1.8 1.6-3.3 2.9-4.3 3.7c-.5 .4-.9 .7-1.1 .8l-.2 .2s0 0 0 0s0 0 0 0C1 327.2-1.4 334.4 .8 340.9S9.1 352 16 352c21.8 0 43.8-5.6 62.1-12.5c9.2-3.5 17.8-7.4 25.2-11.4C134.1 343.3 169.8 352 208 352zM448 176c0 112.3-99.1 196.9-216.5 207C255.8 457.4 336.4 512 432 512c38.2 0 73.9-8.7 104.7-23.9c7.5 4 16 7.9 25.2 11.4c18.3 6.9 40.3 12.5 62.1 12.5c6.9 0 13.1-4.5 15.2-11.1c2.1-6.6-.2-13.8-5.8-17.9c0 0 0 0 0 0s0 0 0 0l-.2-.2c-.2-.2-.6-.4-1.1-.8c-1-.8-2.5-2-4.3-3.7c-3.6-3.3-8.5-8.1-13.3-14.3c-5.5-7-10.7-15.4-14.2-24.7c24.9-29 39.6-64.7 39.6-103.4c0-92.8-84.9-168.9-192.6-175.5c.4 5.1 .6 10.3 .6 15.5z"/>
+                    </svg>
+                    <span>Comentários</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <script>
+        const preloader = document.querySelector('#preloader');
+        if (preloader) {
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    preloader.classList.add('loaded');
+                }, 1000);
+
+                setTimeout(() => {
+                    preloader.remove();
+                }, 2000);
+            });
+        }
+
+        const toggleBtn = document.querySelector('.toggle_btn');
+        const toggleBtnIcon = document.querySelector('.toggle_btn i');
+        const dropDownMenu = document.querySelector('.dropdown_menu');
+
+        toggleBtn.onclick = function () {
+            dropDownMenu.classList.toggle('open')
+            const isOpen = dropDownMenu.classList.contains('open')
+
+            toggleBtnIcon.classList = isOpen
+                ? 'fa-solid fa-xmark'
+                : 'fa-solid fa-bars'
+        }
+
+        // Abrir o popup quando clicar no botão "Adicionar Foto"
+        document.getElementById('btnAdicionarFoto').addEventListener('click', function () {
+            // Limpar os Campos do Formulário
+            uploadForm.reset();
+
+            // Exibir o popup
+            document.getElementById('popupUpload').style.display = 'flex';
+        });
+
+        // Função para abrir o popup
+        function abrirPopup() {
+            // Limpar os campos do formulário
+            uploadForm.reset();
+            
+            // Exibir o popup
+            document.getElementById('popupUpload').style.display = 'flex';
+        }
+
+        // Fechar o Dropdown Menu
+        function fecharPopup() {
+            document.getElementById('popup').style.display = "none";
+
+            // Fechar o Dropdown Menun, se estiver visível
+            const dropdown = document.getElementById('#dropdown-menu');
+            if (dropdown && window.innerWidth <= 1024) {
+                dropdown.classList.remove('active');
+            }
+        }
+
+        // Validação do Milhão
+        const uploadForm = document.getElementById('uploadForm');
+        const milhaoInput = document.getElementById('milhao');
+
+        // Retira Input Numérico
+        milhaoInput.addEventListener('wheel', e => e.preventDefault());
+        milhaoInput.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                e.preventDefault();
+            }
+        });
+
+        // Evento de envio do formulário
+        uploadForm.addEventListener('submit', function (e) {
+            const milhao = parseInt(milhaoInput.value, 10);
+
+            if (
+                isNaN(milhao) ||
+                milhao < 1001 ||
+                milhao > 1492 ||
+                milhaoInput.value.length !== 4
+            ) {
+                e.preventDefault(); // Impede envio do formulário
+                document.getElementById('popupErroMilhao').style.display = 'flex';
+            }
+        });
+
+        // Fechar Popup Adicionar Foto
+        function closePopup() {
+            document.getElementById('popupUpload').style.display = 'none';
+        }
+
+        // Botão "Ok" do erro de Milhão
+        document.getElementById('botaoOkErro').addEventListener('click', function () {
+            document.getElementById('popupErroMilhao').style.display = 'none';
+            closePopup();
+        });
+
+        const fotos = [...document.querySelectorAll('.foto')];
+
+        // Foto Expandida
+        const fotoExpandida = document.querySelector('.foto-expandida');
+        const botaoFechar = document.querySelector('.botao-fechar');
+        const tituloFoto = document.querySelector('.titulo');
+        const imagemGrande = document.querySelector('.imagem-grande');
+        const indiceFoto = document.querySelector('.indice');
+        const setaAnterior = document.querySelector('.seta-anterior');
+        const setaProxima = document.querySelector('.seta-proxima');
+
+        let indice = 0;
+
+        // Abrir o popup e mostrar a imagem
+        fotos.forEach((item, i) => {
+            item.addEventListener('click', () => {
+                updateFoto(i);
+                fotoExpandida.classList.toggle('active');
+            });
+        });
+
+        // Atualizar a imagem e o texto alternativo
+        const updateFoto = (i) => {
+            const foto = fotos[i];
+            const img = foto.querySelector('img');
+            imagemGrande.src = img.src;
+            tituloFoto.innerHTML = img.alt;
+            indiceFoto.innerHTML = i < 9 ? `0${i + 1}` : `${i + 1}`;
+            indice = i;
+        };
+
+        // Fechar o Foto Expandida
+        botaoFechar.addEventListener('click', () => {
+            fotoExpandida.classList.remove('active');
+        });
+
+        // Navegar entre as Fotos
+        setaAnterior.addEventListener('click', () => {
+            if (indice > 0) {
+                updateFoto(indice - 1);
+            } else {
+                updateFoto(fotos.length - 1);
+            }
+        });
+
+        setaProxima.addEventListener('click', () => {
+            if (indice < fotos.length - 1) {
+                updateFoto(indice + 1);
+            } else {
+                updateFoto(0);
+            }
+        });
+    </script>
+</body>
+</html>
