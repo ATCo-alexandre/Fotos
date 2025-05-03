@@ -798,8 +798,8 @@
             /* Foto Expandida */
             .foto-expandida {
                 position: fixed;
-                top: 440px;
-                left: 920px;
+                top: 50%;
+                left: 50%;
                 transform: translate(-50%, -50%) scale(0);
                 width: 1700px;
                 max-width: 1600px;
@@ -917,8 +917,8 @@
             /* Foto Expandida */
             .foto-expandida {
                 position: fixed;
-                top: 440px;
-                left: 920px;
+                top: 50%;
+                left: 50%;
                 transform: translate(-50%, -50%) scale(0);
                 width: 1700px;
                 max-width: 1600px;
@@ -1127,8 +1127,8 @@
             /* Foto Expandida */
             .foto-expandida {
                 position: fixed;
-                top: 400px;
-                left: 300px;
+                top: 50%;
+                left: 50%;
                 transform: translate(-50%, -50%) scale(0);
                 width: 350px;
                 max-width: 2000px;
@@ -1426,137 +1426,123 @@
         }
 
         const toggleBtn = document.querySelector('.toggle_btn');
-        const toggleBtnIcon = document.querySelector('.toggle_btn i');
-        const dropDownMenu = document.querySelector('.dropdown_menu');
+const toggleBtnIcon = document.querySelector('.toggle_btn i');
+const dropDownMenu = document.querySelector('.dropdown_menu');
 
-        toggleBtn.onclick = function () {
-            dropDownMenu.classList.toggle('open')
-            const isOpen = dropDownMenu.classList.contains('open')
+toggleBtn.onclick = function () {
+    dropDownMenu.classList.toggle('open');
+    const isOpen = dropDownMenu.classList.contains('open');
+    toggleBtnIcon.className = isOpen ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+};
 
-            toggleBtnIcon.classList = isOpen
-                ? 'fa-solid fa-xmark'
-                : 'fa-solid fa-bars'
-        }
+const uploadForm = document.getElementById('uploadForm');
+const milhaoInput = document.getElementById('milhao');
+const popupUpload = document.getElementById('popupUpload');
+const popupErroMilhao = document.getElementById('popupErroMilhao');
+const botaoOkErro = document.getElementById('botaoOkErro');
 
-        // Abrir o popup quando clicar no botão "Adicionar Foto"
-        document.getElementById('btnAdicionarFoto').addEventListener('click', function () {
-            // Limpar os Campos do Formulário
-            uploadForm.reset();
+// Abrir popup adicionar foto
+document.getElementById('btnAdicionarFoto').addEventListener('click', abrirPopup);
 
-            // Exibir o popup
-            document.getElementById('popupUpload').style.display = 'flex';
-        });
+function abrirPopup() {
+    uploadForm.reset();
+    popupUpload.style.display = 'flex';
+}
 
-        // Função para abrir o popup
-        function abrirPopup() {
-            // Limpar os campos do formulário
-            uploadForm.reset();
-            
-            // Exibir o popup
-            document.getElementById('popupUpload').style.display = 'flex';
-        }
+// Fechar popup adicionar foto
+function closePopupUpload() {
+    popupUpload.style.display = 'none';
+}
 
-        // Fechar o Dropdown Menu
-        function fecharPopup() {
-            document.getElementById('popup').style.display = "none";
+// Fechar popup erro
+function closePopupErroMilhao() {
+    popupErroMilhao.style.display = 'none';
+}
 
-            // Fechar o Dropdown Menun, se estiver visível
-            const dropdown = document.getElementById('#dropdown-menu');
-            if (dropdown && window.innerWidth <= 1024) {
-                dropdown.classList.remove('active');
-            }
-        }
+// Validação Milhão (Enter, Tab, ou sair do campo)
+function validarMilhao() {
+    const valor = milhaoInput.value.trim();
+    const milhao = parseInt(valor, 10);
+    const invalido = isNaN(milhao) || milhao < 1001 || milhao > 1492 || valor.length !== 4;
 
-        // Validação do Milhão
-        const uploadForm = document.getElementById('uploadForm');
-        const milhaoInput = document.getElementById('milhao');
+    if (invalido) {
+        popupErroMilhao.style.display = 'flex';
+    }
+}
 
-        // Retira Input Numérico
-        milhaoInput.addEventListener('wheel', e => e.preventDefault());
-        milhaoInput.addEventListener('keydown', function (e) {
-            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-                e.preventDefault();
-            }
-        });
+milhaoInput.addEventListener('blur', validarMilhao);
+milhaoInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === 'Tab') {
+        setTimeout(validarMilhao, 10); // Garante que blur aconteça primeiro
+    }
+});
 
-        // Evento de envio do formulário
-        uploadForm.addEventListener('submit', function (e) {
-            const milhao = parseInt(milhaoInput.value, 10);
+// Impede rolagem no input numérico
+milhaoInput.addEventListener('wheel', e => e.preventDefault());
+milhaoInput.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        e.preventDefault();
+    }
+});
 
-            if (
-                isNaN(milhao) ||
-                milhao < 1001 ||
-                milhao > 1492 ||
-                milhaoInput.value.length !== 4
-            ) {
-                e.preventDefault(); // Impede envio do formulário
-                document.getElementById('popupErroMilhao').style.display = 'flex';
-            }
-        });
+// Botão "Ok" do erro de milhão
+botaoOkErro.addEventListener('click', function () {
+    closePopupErroMilhao();
+    closePopupUpload();
+    uploadForm.reset();
+});
 
-        // Fechar Popup Adicionar Foto
-        function closePopup() {
-            document.getElementById('popupUpload').style.display = 'none';
-        }
+// Validação final ao enviar
+uploadForm.addEventListener('submit', function (e) {
+    const valor = milhaoInput.value.trim();
+    const milhao = parseInt(valor, 10);
+    const invalido = isNaN(milhao) || milhao < 1001 || milhao > 1492 || valor.length !== 4;
 
-        // Botão "Ok" do erro de Milhão
-        document.getElementById('botaoOkErro').addEventListener('click', function () {
-            document.getElementById('popupErroMilhao').style.display = 'none';
-            closePopup();
-        });
+    if (invalido) {
+        e.preventDefault();
+        popupErroMilhao.style.display = 'flex';
+    }
+});
 
-        const fotos = [...document.querySelectorAll('.foto')];
+// Galeria de fotos
+const fotos = [...document.querySelectorAll('.foto')];
+const fotoExpandida = document.querySelector('.foto-expandida');
+const botaoFechar = document.querySelector('.botao-fechar');
+const tituloFoto = document.querySelector('.titulo');
+const imagemGrande = document.querySelector('.imagem-grande');
+const indiceFoto = document.querySelector('.indice');
+const setaAnterior = document.querySelector('.seta-anterior');
+const setaProxima = document.querySelector('.seta-proxima');
 
-        // Foto Expandida
-        const fotoExpandida = document.querySelector('.foto-expandida');
-        const botaoFechar = document.querySelector('.botao-fechar');
-        const tituloFoto = document.querySelector('.titulo');
-        const imagemGrande = document.querySelector('.imagem-grande');
-        const indiceFoto = document.querySelector('.indice');
-        const setaAnterior = document.querySelector('.seta-anterior');
-        const setaProxima = document.querySelector('.seta-proxima');
+let indice = 0;
 
-        let indice = 0;
+fotos.forEach((item, i) => {
+    item.addEventListener('click', () => {
+        updateFoto(i);
+        fotoExpandida.classList.add('active');
+    });
+});
 
-        // Abrir o popup e mostrar a imagem
-        fotos.forEach((item, i) => {
-            item.addEventListener('click', () => {
-                updateFoto(i);
-                fotoExpandida.classList.toggle('active');
-            });
-        });
+const updateFoto = (i) => {
+    const foto = fotos[i];
+    const img = foto.querySelector('img');
+    imagemGrande.src = img.src;
+    tituloFoto.innerHTML = img.alt;
+    indiceFoto.innerHTML = i < 9 ? `0${i + 1}` : `${i + 1}`;
+    indice = i;
+};
 
-        // Atualizar a imagem e o texto alternativo
-        const updateFoto = (i) => {
-            const foto = fotos[i];
-            const img = foto.querySelector('img');
-            imagemGrande.src = img.src;
-            tituloFoto.innerHTML = img.alt;
-            indiceFoto.innerHTML = i < 9 ? `0${i + 1}` : `${i + 1}`;
-            indice = i;
-        };
+botaoFechar.addEventListener('click', () => {
+    fotoExpandida.classList.remove('active');
+});
 
-        // Fechar o Foto Expandida
-        botaoFechar.addEventListener('click', () => {
-            fotoExpandida.classList.remove('active');
-        });
+setaAnterior.addEventListener('click', () => {
+    updateFoto(indice > 0 ? indice - 1 : fotos.length - 1);
+});
 
-        // Navegar entre as Fotos
-        setaAnterior.addEventListener('click', () => {
-            if (indice > 0) {
-                updateFoto(indice - 1);
-            } else {
-                updateFoto(fotos.length - 1);
-            }
-        });
-
-        setaProxima.addEventListener('click', () => {
-            if (indice < fotos.length - 1) {
-                updateFoto(indice + 1);
-            } else {
-                updateFoto(0);
-            }
-        });
+setaProxima.addEventListener('click', () => {
+    updateFoto(indice < fotos.length - 1 ? indice + 1 : 0);
+});
     </script>
 </body>
 </html>
